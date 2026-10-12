@@ -1,0 +1,17 @@
+{
+  "project": "Science",
+  "name": "The Water Cycle",
+  "description": "How water travels between the sky, the land and the sea.",
+  "icon": "💧",
+  "color": "#1f9be0",
+  "cards": [
+    { "front": "Evaporation", "back": "Water heats up and turns into water vapour (a gas).", "hint": "Think of a puddle disappearing on a sunny day." },
+    { "front": "Condensation", "back": "Water vapour cools down and turns back into tiny droplets, forming clouds." },
+    { "front": "Precipitation", "back": "Water falling from clouds as rain, snow, sleet or hail." },
+    { "front": "Collection", "back": "Water gathers in oceans, lakes, rivers and underground." },
+    { "front": "What gives the water cycle its energy?", "back": "The Sun", "wrong": ["The Moon", "The wind", "The ocean"] },
+    { "front": "Transpiration", "back": "Plants release water vapour through their leaves.", "hint": "It's like plants sweating." },
+    { "front": "Groundwater", "back": "Water stored underground in soil and rocks." },
+    { "front": "Run-off", "back": "Water that flows over the land into rivers and streams." }
+  ]
+}
