@@ -56,7 +56,14 @@ function starsHtml(n, total = 3) {
 /* ---------------------------------------------------------------- storage */
 
 function defaultStore() {
-  return { lessons: {}, xp: 0, streak: { count: 0, day: '' }, sound: true, prefs: { mode: 'cards', shuffle: true, reverse: false } };
+  return {
+    lessons: {},        // per lesson/project: best score, sessions and per-card results
+    activity: {},       // per day: { n: cards answered, r: right, ms: time studied }
+    xp: 0,
+    streak: { count: 0, day: '', best: 0 },
+    sound: true,
+    prefs: { mode: 'cards', shuffle: true, reverse: false },
+  };
 }
 
 const store = (() => {
@@ -64,7 +71,7 @@ const store = (() => {
     const saved = JSON.parse(localStorage.getItem(STORE_KEY));
     if (saved && typeof saved === 'object') {
       const base = defaultStore();
-      return { ...base, ...saved, prefs: { ...base.prefs, ...saved.prefs } };
+      return { ...base, ...saved, prefs: { ...base.prefs, ...saved.prefs }, streak: { ...base.streak, ...saved.streak } };
     }
   } catch { /* storage unavailable */ }
   return defaultStore();
@@ -74,13 +81,30 @@ function saveStore() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch { /* storage unavailable */ }
 }
 
+const emptyStats = () => ({ best: 0, plays: 0, history: [], sessions: [], cards: {} });
+
 function statsFor(key, create = false) {
-  if (!store.lessons[key] && create) store.lessons[key] = { best: 0, plays: 0, history: [], cards: {} };
-  return store.lessons[key] || { best: 0, plays: 0, history: [], cards: {} };
+  if (!store.lessons[key] && create) store.lessons[key] = emptyStats();
+  const st = store.lessons[key] || emptyStats();
+  st.sessions = st.sessions || [];
+  return st;
 }
 
+// Per card: r/w = right/wrong counts, last = 1|0, log = last 10 results, t = last time seen
 function cardStat(card) {
   return statsFor(card.lessonId).cards[card.key];
+}
+
+function cardStatus(card) {
+  const c = cardStat(card);
+  if (!c || !(c.r + c.w)) return 'new';
+  return c.last === 1 ? 'known' : 'learning';
+}
+
+function cardCounts(cards) {
+  const counts = { known: 0, learning: 0, new: 0 };
+  for (const c of cards) counts[cardStatus(c)]++;
+  return counts;
 }
 
 function mastery(lesson) {
@@ -98,7 +122,21 @@ function currentStreak() {
 function bumpStreak() {
   const today = dayString();
   if (store.streak.day === today) return;
-  store.streak = { count: currentStreak() + 1, day: today };
+  const count = currentStreak() + 1;
+  store.streak = { count, day: today, best: Math.max(store.streak.best || 0, count) };
+}
+
+function logActivity(ok, ms) {
+  const day = dayString();
+  const a = store.activity[day] || (store.activity[day] = { n: 0, r: 0, ms: 0 });
+  a.n++;
+  if (ok) a.r++;
+  a.ms += ms;
+}
+
+function timeAgo(t) {
+  const days = Math.round((new Date(dayString()) - new Date(dayString(new Date(t)))) / 864e5);
+  return days <= 0 ? 'today' : days === 1 ? 'yesterday' : days < 30 ? `${days} days ago` : shortDate(t);
 }
 
 function updateTopbar() {
@@ -396,7 +434,7 @@ function renderProjectList() {
     return `
       <section class="project">
         <div class="project-head">
-          <div class="project-title"><h2>${esc(p.name)}</h2><span class="count">${plural(p.lessons.length, 'lesson')}</span></div>
+          <div class="project-title"><button class="project-link" data-project-page="${pi}" title="See progress for ${esc(p.name)}"><h2>${esc(p.name)}</h2><span aria-hidden="true">›</span></button><span class="count">${plural(p.lessons.length, 'lesson')}</span></div>
           ${p.lessons.length > 1 ? `<button class="btn small secondary" data-project="${pi}">📚 Study all ${total} cards</button>` : ''}
         </div>
         <div class="grid">
@@ -420,14 +458,387 @@ function renderProjectList() {
   }).join('');
 
   box.querySelectorAll('[data-lesson]').forEach(el => el.addEventListener('click', () => {
-    const l = lessons.find(x => x.id === el.dataset.lesson);
-    openSetup({ key: l.id, title: l.name, subtitle: l.project, lessons: [l] });
+    navigate(`#/lesson/${encodeURIComponent(el.dataset.lesson)}`);
   }));
   box.querySelectorAll('[data-project]').forEach(el => el.addEventListener('click', () => {
-    const p = groups[+el.dataset.project];
-    const all = projects().find(x => x.name === p.name);
-    openSetup({ key: `project:${p.name}`, title: `All of ${p.name}`, subtitle: plural(all.lessons.length, 'lesson'), lessons: all.lessons });
+    openSetup({ ...projectTarget(groups[+el.dataset.project].name), backLabel: 'All lessons' });
   }));
+  box.querySelectorAll('[data-project-page]').forEach(el => el.addEventListener('click', () => {
+    navigate(`#/project/${encodeURIComponent(groups[+el.dataset.projectPage].name)}`);
+  }));
+}
+
+/* ---------------------------------------------------------------- routing */
+
+function navigate(hash) {
+  if (location.hash === hash) route();
+  else location.hash = hash;
+}
+
+function route() {
+  const [view, ...rest] = location.hash.replace(/^#\/?/, '').split('/');
+  const arg = decodeURIComponent(rest.join('/'));
+  if (view === 'study') {
+    if (session) return;
+    history.replaceState(null, '', '#/'); // reloaded mid-session: nothing to resume
+  }
+  session = null;
+  keyHandler = null;
+  confetti.stop();
+  closeDialog();
+  tooltip.hide();
+  scrollTo(0, 0);
+  if (view === 'lesson') {
+    const l = lessons.find(x => x.id === arg);
+    if (l) return renderDeck(lessonTarget(l));
+  }
+  if (view === 'project') {
+    const t = projectTarget(arg);
+    if (t) return renderDeck(t);
+  }
+  if (view === 'stats') return renderStats();
+  renderHome();
+}
+
+window.addEventListener('hashchange', route);
+
+function lessonTarget(l) {
+  return { key: l.id, kind: 'lesson', title: l.name, subtitle: l.project, icon: l.icon, color: l.color, description: l.description, lessons: [l], backLabel: 'Back to lesson' };
+}
+
+function projectTarget(name) {
+  const p = projects().find(x => x.name === name);
+  if (!p) return null;
+  return { key: `project:${name}`, kind: 'project', title: name, subtitle: plural(p.lessons.length, 'lesson'), icon: '📚', color: '', description: '', lessons: p.lessons, backLabel: 'Back to project' };
+}
+
+/* ---------------------------------------------------------------- shared bits */
+
+function tile(label, value, sub = '') {
+  return `<div class="tile"><small>${label}</small><b>${value}</b>${sub ? `<span>${sub}</span>` : ''}</div>`;
+}
+
+function statusBar(counts, height) {
+  return stackBar([
+    { value: counts.known, cls: 's-right', label: 'Known' },
+    { value: counts.learning, cls: 's-wrong', label: 'Still learning' },
+    { value: counts.new, cls: 's-new', label: 'Not studied yet' },
+  ], { height });
+}
+
+function statusLegend(counts) {
+  return legend([
+    { cls: 's-right', label: `✓ Known <b>${counts.known}</b>` },
+    { cls: 's-wrong', label: `✗ Still learning <b>${counts.learning}</b>` },
+    { cls: 's-new', label: `Not studied yet <b>${counts.new}</b>` },
+  ]);
+}
+
+// Score history for a lesson/project. Older saves only kept percentages without dates.
+function scorePoints(st) {
+  if (st.sessions.length) return st.sessions;
+  return st.history.map((pct, i) => ({ pct, label: `Try ${i + 1}` }));
+}
+
+function resultDots(log = []) {
+  const pad = Array(Math.max(0, 10 - log.length)).fill(null);
+  return `<span class="dots" aria-label="Last results">${[...pad, ...log].map(v =>
+    v === null ? '<i class="d-none"></i>' : v ? '<i class="d-right" title="Right"></i>' : '<i class="d-wrong" title="Wrong"></i>').join('')}</span>`;
+}
+
+/* ---------------------------------------------------------------- lesson / project page */
+
+let deckFilter = 'all';
+let deckSort = 'order';
+
+function renderDeck(t) {
+  const cards = t.lessons.flatMap(l => l.cards);
+  const st = statsFor(t.key);
+  const counts = cardCounts(cards);
+  let right = 0, wrong = 0, lastSeen = 0;
+  for (const c of cards) {
+    const cs = cardStat(c);
+    if (!cs) continue;
+    right += cs.r;
+    wrong += cs.w;
+    lastSeen = Math.max(lastSeen, cs.t || 0);
+  }
+  const answers = right + wrong;
+  const known = Math.round((counts.known / cards.length) * 100);
+  const points = scorePoints(st);
+  deckFilter = 'all';
+
+  $app.innerHTML = `
+    <button class="back-link" id="backHome">← All lessons</button>
+    <section class="deck-head" ${t.color ? `style="--accent:${esc(t.color)}"` : ''}>
+      <div class="lesson-icon big">${esc(t.icon)}</div>
+      <div class="deck-title">
+        <small>${esc(t.subtitle)} · ${plural(cards.length, 'card')}</small>
+        <h1>${esc(t.title)}</h1>
+        ${t.description ? `<p>${esc(t.description)}</p>` : ''}
+      </div>
+      <button class="btn" id="studyBtn">▶ Study</button>
+    </section>
+
+    <div class="tiles">
+      ${tile('Cards known', `${known}%`, `${counts.known} of ${cards.length}`)}
+      ${tile('Best score', st.plays ? `${st.best}%` : '–', `<span class="stars">${starsHtml(st.plays ? starsFor(st.best) : 0)}</span>`)}
+      ${tile('Times studied', st.plays, lastSeen ? `last: ${timeAgo(lastSeen)}` : 'not yet')}
+      ${tile('Answers right', answers ? `${Math.round((right / answers) * 100)}%` : '–', `${right} of ${answers}`)}
+    </div>
+
+    <section class="panel">
+      <h3>Card progress</h3>
+      ${statusBar(counts, 18)}
+      ${statusLegend(counts)}
+    </section>
+
+    <section class="panel">
+      <h3>Scores over time</h3>
+      ${points.length ? '<div class="chart-box" id="scoreChart"></div>' : '<p class="muted empty-chart">Finish a round to see your scores here.</p>'}
+    </section>
+
+    ${t.kind === 'project' ? `
+      <section class="panel">
+        <h3>Lessons</h3>
+        <div class="lesson-bars">
+          ${t.lessons.map(l => {
+            const c = cardCounts(l.cards);
+            return `<button class="lesson-bar" data-goto="${esc(l.id)}">
+              <span class="lb-name">${esc(l.icon)} ${esc(l.name)}</span>
+              ${statusBar(c, 12)}
+              <span class="lb-pct">${Math.round((c.known / l.cards.length) * 100)}%</span>
+            </button>`;
+          }).join('')}
+        </div>
+      </section>` : ''}
+
+    <section class="panel">
+      <div class="panel-head">
+        <h3>Cards</h3>
+        <label class="sort">Sort
+          <select id="sortSel">
+            <option value="order">Lesson order</option>
+            <option value="hardest">Hardest first</option>
+            <option value="most">Most played</option>
+            <option value="least">Least played</option>
+            <option value="az">A → Z</option>
+          </select>
+        </label>
+      </div>
+      <div class="chips" id="chips">
+        ${[['all', 'All', cards.length], ['learning', '✗ Still learning', counts.learning], ['known', '✓ Known', counts.known], ['new', 'New', counts.new]]
+          .map(([k, label, n]) => `<button class="chip" data-filter="${k}" aria-pressed="${k === 'all'}">${label} <b>${n}</b></button>`).join('')}
+      </div>
+      <div class="card-table" id="cardList"></div>
+    </section>
+
+    <div class="deck-foot">
+      <button class="link-btn danger" id="resetBtn">Reset progress for this ${t.kind}</button>
+    </div>`;
+
+  if (points.length) mountChart(document.getElementById('scoreChart'), w => scoreLineChart(points, w));
+  document.getElementById('backHome').addEventListener('click', () => navigate('#/'));
+  document.getElementById('studyBtn').addEventListener('click', () => openSetup(t));
+  $app.querySelectorAll('[data-goto]').forEach(el => el.addEventListener('click', () => navigate(`#/lesson/${encodeURIComponent(el.dataset.goto)}`)));
+
+  const sortSel = document.getElementById('sortSel');
+  sortSel.value = deckSort;
+  sortSel.addEventListener('change', () => { deckSort = sortSel.value; renderCardList(t, cards); });
+  $app.querySelectorAll('[data-filter]').forEach(el => el.addEventListener('click', () => {
+    deckFilter = el.dataset.filter;
+    $app.querySelectorAll('[data-filter]').forEach(b => b.setAttribute('aria-pressed', String(b === el)));
+    renderCardList(t, cards);
+  }));
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if (!confirm(`Reset all scores and card results for “${t.title}”? This can't be undone.`)) return;
+    delete store.lessons[t.key];
+    for (const l of t.lessons) delete store.lessons[l.id];
+    saveStore();
+    renderDeck(t);
+  });
+  renderCardList(t, cards);
+}
+
+function renderCardList(t, cards) {
+  const box = document.getElementById('cardList');
+  const lessonName = id => lessons.find(l => l.id === id)?.name || '';
+  const acc = r => (r.n ? r.s.r / r.n : 2); // unplayed cards sort after played ones
+  let rows = cards.map((c, i) => {
+    const s = cardStat(c) || { r: 0, w: 0, log: [] };
+    return { c, i, s, n: s.r + s.w, status: cardStatus(c) };
+  });
+  if (deckFilter !== 'all') rows = rows.filter(r => r.status === deckFilter);
+  const sorters = {
+    order: (a, b) => a.i - b.i,
+    hardest: (a, b) => acc(a) - acc(b) || b.s.w - a.s.w,
+    most: (a, b) => b.n - a.n || a.i - b.i,
+    least: (a, b) => a.n - b.n || a.i - b.i,
+    az: (a, b) => byName(a.c.front, b.c.front),
+  };
+  rows.sort(sorters[deckSort]);
+
+  if (!rows.length) {
+    box.innerHTML = `<p class="muted empty-chart">No cards here.</p>`;
+    return;
+  }
+  box.innerHTML = `
+    <div class="crow chead" aria-hidden="true">
+      <span>#</span><span>Card</span><span>Played</span><span>✓ / ✗</span><span>Right</span><span>Last 10</span>
+    </div>
+    ${rows.map(({ c, i, s, n, status }) => `
+      <div class="crow st-${status}" tabindex="0" role="button" aria-expanded="false">
+        <span class="cnum">${i + 1}</span>
+        <span class="ctext">
+          <b>${c.image ? `<img src="${esc(c.image)}" alt="">` : ''}${esc(c.front)}</b>
+          <span class="cback">${esc(c.back)}</span>
+          ${t.kind === 'project' ? `<small class="clesson">${esc(lessonName(c.lessonId))}</small>` : ''}
+        </span>
+        <span class="cplayed"><b>${n}</b><small>× played</small></span>
+        <span class="crw"><span class="cr">✓ ${s.r}</span><span class="cw">✗ ${s.w}</span></span>
+        <span class="cacc">${n ? `${stackBar([{ value: s.r, cls: 's-right', label: '✓ Right' }, { value: s.w, cls: 's-wrong', label: '✗ Wrong' }], { height: 10 })}<small>${Math.round((s.r / n) * 100)}%</small>` : '<small class="muted">new</small>'}</span>
+        <span class="clog">${resultDots(s.log)}</span>
+      </div>`).join('')}`;
+
+  box.querySelectorAll('.crow:not(.chead)').forEach(row => {
+    const toggle = () => row.setAttribute('aria-expanded', String(row.getAttribute('aria-expanded') !== 'true'));
+    row.addEventListener('click', toggle);
+    row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+  });
+}
+
+/* ---------------------------------------------------------------- progress page */
+
+function renderStats() {
+  const allCards = lessons.flatMap(l => l.cards);
+  const counts = cardCounts(allCards);
+  const days = Object.values(store.activity);
+  const answered = days.reduce((n, d) => n + d.n, 0);
+  const right = days.reduce((n, d) => n + d.r, 0);
+  const minutes = Math.round(days.reduce((n, d) => n + (d.ms || 0), 0) / 60000);
+  const daysStudied = days.filter(d => d.n > 0).length;
+
+  const last14 = [];
+  for (let i = 13; i >= 0; i--) {
+    const day = new Date();
+    day.setHours(0, 0, 0, 0);
+    day.setDate(day.getDate() - i);
+    const a = store.activity[dayString(day)] || { r: 0, n: 0 };
+    last14.push({ day, r: a.r, w: a.n - a.r });
+  }
+
+  const tricky = allCards
+    .map(c => ({ c, s: cardStat(c) }))
+    .filter(x => x.s && x.s.r + x.s.w >= 2 && x.s.w > 0)
+    .sort((a, b) => a.s.r / (a.s.r + a.s.w) - b.s.r / (b.s.r + b.s.w) || b.s.w - a.s.w)
+    .slice(0, 8);
+
+  $app.innerHTML = `
+    <button class="back-link" id="backHome">← All lessons</button>
+    <section class="hero"><div><h1>My progress 📊</h1><p>Everything you've studied on this device.</p></div></section>
+
+    <div class="tiles">
+      ${tile('Day streak', `🔥 ${currentStreak()}`, `best: ${store.streak.best || currentStreak()} days`)}
+      ${tile('Days studied', daysStudied, daysStudied ? `since ${shortDate(Object.keys(store.activity).sort()[0])}` : 'start today!')}
+      ${tile('Cards answered', answered, answered ? `${Math.round((right / answered) * 100)}% right` : '')}
+      ${tile('Time studied', minutes < 1 && answered ? '< 1 min' : `${minutes} min`)}
+      ${tile('Cards known', `${counts.known}`, `of ${allCards.length}`)}
+    </div>
+
+    <section class="panel">
+      <h3>Study calendar</h3>
+      <div class="chart-box" id="heatChart"></div>
+      <div class="legend heat-legend"><span>Less</span>${[0, 1, 2, 3, 4].map(i => `<i class="heat-${i}"></i>`).join('')}<span>More</span></div>
+    </section>
+
+    <section class="panel">
+      <h3>Last 2 weeks</h3>
+      <div class="chart-box" id="dayChart"></div>
+      ${legend([{ cls: 's-right', label: '✓ Right' }, { cls: 's-wrong', label: '✗ Wrong' }])}
+    </section>
+
+    <section class="panel">
+      <h3>Lessons</h3>
+      <div class="lesson-bars">
+        ${projects().map(p => `
+          <div class="lb-project">${esc(p.name)}</div>
+          ${p.lessons.map(l => {
+            const c = cardCounts(l.cards);
+            return `<button class="lesson-bar" data-goto="${esc(l.id)}">
+              <span class="lb-name">${esc(l.icon)} ${esc(l.name)}</span>
+              ${statusBar(c, 12)}
+              <span class="lb-pct">${Math.round((c.known / l.cards.length) * 100)}%</span>
+            </button>`;
+          }).join('')}`).join('')}
+      </div>
+      ${statusLegend(counts)}
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h3>Trickiest cards</h3>
+        ${tricky.length ? '<button class="btn small" id="trickyBtn">🔁 Practise these</button>' : ''}
+      </div>
+      ${tricky.length ? `<div class="tricky">${tricky.map(({ c, s }) => {
+        const n = s.r + s.w;
+        return `<div class="tricky-row">
+          <span class="ctext"><b>${c.image ? `<img src="${esc(c.image)}" alt="">` : ''}${esc(c.front)}</b><small class="clesson">${esc(lessons.find(l => l.id === c.lessonId)?.name || '')}</small></span>
+          <span class="cacc">${stackBar([{ value: s.r, cls: 's-right', label: '✓ Right' }, { value: s.w, cls: 's-wrong', label: '✗ Wrong' }], { height: 10 })}<small>${s.r} of ${n}</small></span>
+        </div>`;
+      }).join('')}</div>` : '<p class="muted empty-chart">Cards you often get wrong will show up here.</p>'}
+    </section>
+
+    <section class="panel">
+      <h3>Backup</h3>
+      <p class="muted">Progress is saved in this browser. Download a backup to keep it safe or to move it to another device.</p>
+      <div class="backup-actions">
+        <button class="btn small secondary" id="exportBtn">⬇️ Download backup</button>
+        <label class="btn small secondary">⬆️ Restore backup<input type="file" id="importInput" accept=".json,application/json" hidden></label>
+      </div>
+    </section>`;
+
+  mountChart(document.getElementById('heatChart'), w => heatmapChart(store.activity, w));
+  mountChart(document.getElementById('dayChart'), w => dailyBarsChart(last14, w));
+  document.getElementById('backHome').addEventListener('click', () => navigate('#/'));
+  $app.querySelectorAll('[data-goto]').forEach(el => el.addEventListener('click', () => navigate(`#/lesson/${encodeURIComponent(el.dataset.goto)}`)));
+  document.getElementById('trickyBtn')?.addEventListener('click', () => {
+    const deck = tricky.map(x => x.c);
+    const ids = new Set(deck.map(c => c.lessonId));
+    openSetup({ key: 'tricky', title: 'Trickiest cards', subtitle: 'From all your lessons', lessons: lessons.filter(l => ids.has(l.id)), deck, backLabel: 'Back to my progress' });
+  });
+  document.getElementById('exportBtn').addEventListener('click', exportProgress);
+  document.getElementById('importInput').addEventListener('change', e => importProgress(e.target.files[0]));
+}
+
+function exportProgress() {
+  const blob = new Blob([JSON.stringify({ app: 'studyblue', version: 1, exported: new Date().toISOString(), data: store }, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `studyblue-progress-${dayString()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+async function importProgress(file) {
+  if (!file) return;
+  try {
+    const backup = JSON.parse(await file.text());
+    const data = backup?.data;
+    if (backup?.app !== 'studyblue' || !data || typeof data.lessons !== 'object') throw new Error('This is not a StudyBlue backup file.');
+    const when = backup.exported ? new Date(backup.exported).toLocaleString() : 'an unknown date';
+    if (!confirm(`Replace the progress on this device with the backup from ${when}?`)) return;
+    const base = defaultStore();
+    for (const k of Object.keys(store)) delete store[k];
+    Object.assign(store, base, data, { prefs: { ...base.prefs, ...data.prefs }, streak: { ...base.streak, ...data.streak } });
+    saveStore();
+    updateTopbar();
+    toast('✅ Progress restored!');
+    renderStats();
+  } catch (e) {
+    alert(`Couldn't restore: ${e.message}`);
+  }
 }
 
 /* ---------------------------------------------------------------- setup dialog */
@@ -438,7 +849,7 @@ function closeDialog() {
 
 function openSetup(target) {
   closeDialog();
-  const cards = target.lessons.flatMap(l => l.cards);
+  const cards = target.deck || target.lessons.flatMap(l => l.cards);
   const missed = cards.filter(c => cardStat(c)?.last === 0);
   const canQuiz = new Set(cards.map(c => c.back)).size >= 2 || cards.some(c => c.wrong.length);
   const prefs = store.prefs;
@@ -501,8 +912,9 @@ function startSession(opts) {
     results: [],
     flipped: false,
     busy: false,
+    lastT: Date.now(),
   };
-  if (history.state?.study !== true) history.pushState({ study: true }, '', '#study');
+  if (location.hash !== '#/study') location.hash = '#/study';
   renderStudyFrame();
 }
 
@@ -541,17 +953,20 @@ function updateScore() {
   document.getElementById('counter').textContent = `Card ${Math.min(s.i + 1, total)} of ${total}`;
 }
 
+function confirmQuit() {
+  const midway = session && session.results.length && session.i < session.deck.length;
+  return !midway || confirm('Stop this lesson? Your progress on these cards is saved.');
+}
+
 function quitSession() {
-  if (session && session.results.length && session.i < session.deck.length && !confirm('Stop this lesson? Your progress on these cards is saved.')) return;
-  goHome();
+  if (confirmQuit()) leaveStudy();
 }
 
-function goHome() {
-  if (history.state?.study) history.back();
-  else renderHome();
+// The study screen is always entered from another page, so "back" returns there.
+function leaveStudy() {
+  session = null;
+  history.back();
 }
-
-window.addEventListener('popstate', () => { if (!history.state?.study) renderHome(); });
 
 function record(ok) {
   const s = session;
@@ -562,7 +977,12 @@ function record(ok) {
   const c = st.cards[card.key] || (st.cards[card.key] = { r: 0, w: 0, last: null });
   ok ? c.r++ : c.w++;
   c.last = ok ? 1 : 0;
+  c.log = [...(c.log || []), c.last].slice(-10);
+  c.t = Date.now();
   if (ok) store.xp++;
+  logActivity(ok, Math.min(60000, c.t - s.lastT));
+  s.lastT = c.t;
+  bumpStreak();
   saveStore();
   updateTopbar();
   updateScore();
@@ -796,9 +1216,9 @@ function finishSession() {
     st.best = Math.max(st.best, pct);
     st.plays++;
     st.history = [...st.history, pct].slice(-10);
-    tries = st.history;
+    st.sessions = [...st.sessions, { t: Date.now(), pct, right: s.right, total, mode: s.mode }].slice(-60);
+    tries = scorePoints(st);
   }
-  bumpStreak();
   saveStore();
   updateTopbar();
 
@@ -831,8 +1251,8 @@ function finishSession() {
 
       ${tries.length > 1 ? `
         <div class="history">
-          <h3>📈 Your last ${tries.length} tries</h3>
-          <div class="bars">${tries.map((h, i) => `<div class="bar ${i === tries.length - 1 ? 'now' : ''}" title="${h}%"><small>${h}%</small><i style="height:${Math.max(4, h) * 0.8}%"></i></div>`).join('')}</div>
+          <h3>📈 Your scores so far</h3>
+          <div class="chart-box" id="resultChart"></div>
         </div>` : ''}
 
       ${missed.length ? `
@@ -844,7 +1264,7 @@ function finishSession() {
       <div class="result-actions">
         ${missed.length ? `<button class="btn red" id="practiceBtn">🔁 Practise ${plural(missed.length, 'missed card')}</button>` : ''}
         <button class="btn" id="againBtn">↻ Study again</button>
-        <button class="btn secondary" id="homeBtn2">🏠 All lessons</button>
+        <button class="btn secondary" id="homeBtn2">← ${esc(s.backLabel || 'Back to lesson')}</button>
       </div>
     </div>`;
 
@@ -860,6 +1280,7 @@ function finishSession() {
     if (p < 1 && document.body.contains(pctEl)) requestAnimationFrame(count);
   };
   requestAnimationFrame(count);
+  if (tries.length > 1) mountChart(document.getElementById('resultChart'), w => scoreLineChart(tries, w));
 
   // Celebrate
   if (stars >= 1) {
@@ -876,8 +1297,8 @@ function finishSession() {
   const again = cards => startSession({ ...s, deck: cards, practice: cards !== s.deck ? true : s.practice });
   document.getElementById('practiceBtn')?.addEventListener('click', () => again(missed));
   document.getElementById('againBtn').addEventListener('click', () => again(s.deck));
-  document.getElementById('homeBtn2').addEventListener('click', goHome);
-  keyHandler = e => { if (e.key === 'Enter') document.getElementById(missed.length ? 'practiceBtn' : 'againBtn').click(); else if (e.key === 'Escape') goHome(); };
+  document.getElementById('homeBtn2').addEventListener('click', leaveStudy);
+  keyHandler = e => { if (e.key === 'Enter') document.getElementById(missed.length ? 'practiceBtn' : 'againBtn').click(); else if (e.key === 'Escape') leaveStudy(); };
 }
 
 /* ---------------------------------------------------------------- boot */
@@ -888,7 +1309,10 @@ document.addEventListener('keydown', e => {
   keyHandler?.(e);
 });
 
-document.getElementById('homeBtn').addEventListener('click', () => (session ? quitSession() : renderHome()));
+document.getElementById('homeBtn').addEventListener('click', () => { if (confirmQuit()) navigate('#/'); });
+document.getElementById('statsBtn').addEventListener('click', () => { if (confirmQuit()) navigate('#/stats'); });
+document.getElementById('streakPill').addEventListener('click', () => { if (confirmQuit()) navigate('#/stats'); });
+document.getElementById('xpPill').addEventListener('click', () => { if (confirmQuit()) navigate('#/stats'); });
 document.getElementById('soundBtn').addEventListener('click', () => {
   store.sound = !store.sound;
   saveStore();
@@ -898,7 +1322,6 @@ document.getElementById('soundBtn').addEventListener('click', () => {
 
 (async () => {
   updateTopbar();
-  if (history.state?.study) history.replaceState(null, '', location.pathname + location.search);
   await loadLessons();
-  renderHome();
+  route();
 })();

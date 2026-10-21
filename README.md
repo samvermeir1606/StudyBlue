@@ -8,7 +8,9 @@ shows up on the site.
 - **Quiz**: multiple choice, with the wrong answers taken from the other cards.
 - Right and wrong counts while you study, plus a results screen with stars, confetti, a score chart and your last tries.
 - **Practise missed cards**: repeat only the cards you got wrong.
-- Saves progress in the browser: best score, how well each lesson is known, a daily streak 🔥 and a star counter ⭐.
+- **Lesson pages**: every card with how often it was played, right vs wrong, % right and the last 10 results. You can sort it (hardest first, most played…) and filter it (still learning / known / new). The page also shows a chart of scores over time.
+- **My progress (📊)**: day streak, a study calendar, cards answered over the last 2 weeks, how well each lesson is known, and the trickiest cards with a button to practise them.
+- Saves progress in the browser. On the progress page you can download a backup and restore it on another device.
 
 ## Adding a lesson
 

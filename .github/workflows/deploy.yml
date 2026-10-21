@@ -1,10 +1,10 @@
-# Publishes the site to GitHub Pages every time something is pushed to main
+# Publishes the site to GitHub Pages every time something is pushed to main or master
 # (for example when you upload a new lesson file on github.com).
 name: Deploy StudyBlue
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
