@@ -1,11 +1,21 @@
 <!doctype html>
-<html lang="en">
+<html lang="nl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>StudyBlue</title>
+  <meta name="description" content="Leren met flashcards" />
   <meta name="theme-color" content="#1f7ae0" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231f7ae0'/><rect x='22' y='28' width='56' height='40' rx='8' fill='white'/><rect x='30' y='36' width='40' height='6' rx='3' fill='%231f7ae0'/><rect x='30' y='48' width='28' height='6' rx='3' fill='%2389c2ff'/></svg>" />
+
+  <!-- Als app op het beginscherm van een iPhone/iPad -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="StudyBlue" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet" />
@@ -13,26 +23,27 @@
 </head>
 <body>
   <header class="topbar">
-    <button class="brand" id="homeBtn" aria-label="Back to all lessons">
+    <button class="brand" id="homeBtn" aria-label="Naar alle lessen">
       <span class="brand-logo" aria-hidden="true">
         <svg viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="currentColor"/><rect x="22" y="28" width="56" height="40" rx="8" fill="#fff"/><rect x="30" y="36" width="40" height="6" rx="3" fill="currentColor"/><rect x="30" y="48" width="28" height="6" rx="3" fill="#89c2ff"/></svg>
       </span>
       <span class="brand-name">Study<b>Blue</b></span>
     </button>
     <div class="topbar-right">
-      <div class="pill" id="streakPill" title="Days in a row you studied">🔥 <span id="streakCount">0</span></div>
-      <div class="pill" id="xpPill" title="Total cards answered correctly">⭐ <span id="xpCount">0</span></div>
-      <button class="icon-btn" id="statsBtn" aria-label="My progress" title="My progress">📊</button>
-      <button class="icon-btn" id="soundBtn" aria-label="Toggle sound" title="Sound on/off">🔊</button>
+      <button class="pill" id="streakPill" title="Dagen op rij geleerd">🔥 <span id="streakCount">0</span></button>
+      <button class="pill" id="xpPill" title="Juiste antwoorden in totaal">⭐ <span id="xpCount">0</span></button>
+      <button class="icon-btn" id="statsBtn" aria-label="Mijn voortgang" title="Mijn voortgang">📊</button>
+      <button class="icon-btn" id="soundBtn" aria-label="Geluid aan of uit" title="Geluid aan/uit">🔊</button>
     </div>
   </header>
 
   <main id="app" tabindex="-1">
-    <div class="loading"><div class="spinner"></div><p>Loading your lessons…</p></div>
+    <div class="loading"><div class="spinner"></div><p>Je lessen worden geladen…</p></div>
   </main>
 
   <canvas id="confetti" aria-hidden="true"></canvas>
   <script src="charts.js"></script>
   <script src="app.js"></script>
+  <script src="maker.js"></script>
 </body>
 </html>

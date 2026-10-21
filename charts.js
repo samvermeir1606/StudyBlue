@@ -7,7 +7,7 @@
    ========================================================================= */
 
 const svgEsc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const shortDate = d => new Date(d).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+const shortDate = d => new Date(d).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short' });
 
 /* ---------------------------------------------------------------- tooltip */
 
@@ -81,7 +81,7 @@ function scoreLineChart(points, width) {
   const x = i => L + (n === 1 ? iw / 2 : (i / (n - 1)) * iw);
   const y = v => T + ih - (v / 100) * ih;
 
-  let s = `<svg class="chart" width="${width}" height="${H}" viewBox="0 0 ${width} ${H}" role="img" aria-label="Score for each time you studied">`;
+  let s = `<svg class="chart" width="${width}" height="${H}" viewBox="0 0 ${width} ${H}" role="img" aria-label="Score per ronde">`;
   s += `<defs><linearGradient id="scoreFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--chart-line)" stop-opacity=".22"/><stop offset="1" stop-color="var(--chart-line)" stop-opacity="0"/></linearGradient></defs>`;
   for (const g of [0, 50, 100]) {
     s += `<line class="grid" x1="${L}" x2="${width - R}" y1="${y(g)}" y2="${y(g)}"/>`;
@@ -107,7 +107,7 @@ function scoreLineChart(points, width) {
   });
 
   points.forEach((p, i) => {
-    const tip = `${p.label || shortDate(p.t)} · ${p.pct}%${p.total ? `\n${p.right} of ${p.total} right` : ''}`;
+    const tip = `${p.label || shortDate(p.t)} · ${p.pct}%${p.total ? `\n${p.right} van ${p.total} juist` : ''}`;
     s += `<g class="pt" tabindex="0" data-tip="${svgEsc(tip)}"><circle class="hit" cx="${x(i)}" cy="${y(p.pct)}" r="14"/><circle class="dot" cx="${x(i)}" cy="${y(p.pct)}" r="5"/></g>`;
   });
   // Direct label on the latest score only
@@ -128,7 +128,7 @@ function dailyBarsChart(days, width) {
   const y = v => T + ih - (v / max) * ih;
   const today = dayString();
 
-  let s = `<svg class="chart" width="${width}" height="${H}" viewBox="0 0 ${width} ${H}" role="img" aria-label="Cards answered per day">`;
+  let s = `<svg class="chart" width="${width}" height="${H}" viewBox="0 0 ${width} ${H}" role="img" aria-label="Kaarten per dag">`;
   for (const g of [0, max / 2, max]) {
     s += `<line class="grid" x1="${L}" x2="${width - R}" y1="${y(g)}" y2="${y(g)}"/>`;
     s += `<text class="axis" x="${L - 8}" y="${y(g) + 4}" text-anchor="end">${Math.round(g)}</text>`;
@@ -138,7 +138,7 @@ function dailyBarsChart(days, width) {
     const x0 = cx - bw / 2;
     const total = d.r + d.w;
     const isToday = dayString(d.day) === today;
-    const label = d.day.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+    const label = d.day.toLocaleDateString('nl-BE', { weekday: 'short', day: 'numeric', month: 'short' });
     if (total) {
       const hr = (d.r / max) * ih, hw = (d.w / max) * ih;
       const gap = d.r && d.w ? 2 : 0;
@@ -146,7 +146,7 @@ function dailyBarsChart(days, width) {
       if (d.r) s += `<path class="seg-right" d="${d.w ? `M${x0},${y(0)}V${y(0) - hr}H${x0 + bw}V${y(0)}Z` : barPath(x0, y(0) - hr, bw, hr, 4)}"/>`;
       if (d.w) s += `<path class="seg-wrong" d="${barPath(x0, y(0) - hr - gap - hw, bw, hw, 4)}"/>`;
     }
-    s += `<rect class="hit" tabindex="0" x="${L + slot * i}" y="${T}" width="${slot}" height="${ih}" data-tip="${svgEsc(`${label}\n✓ ${d.r} right · ✗ ${d.w} wrong`)}"/>`;
+    s += `<rect class="hit" tabindex="0" x="${L + slot * i}" y="${T}" width="${slot}" height="${ih}" data-tip="${svgEsc(`${label}\n✓ ${d.r} juist · ✗ ${d.w} fout`)}"/>`;
     s += `<text class="axis${isToday ? ' today' : ''}" x="${cx}" y="${H - 8}" text-anchor="middle">${d.day.getDate()}</text>`;
   });
   return s + '</svg>';
@@ -156,7 +156,7 @@ function dailyBarsChart(days, width) {
 
 // activity: { 'YYYY-MM-DD': { n, r } }
 function heatmapChart(activity, width) {
-  const gap = 3, labelW = 22, top = 18;
+  const gap = 3, labelW = 24, top = 18;
   // Show up to half a year; squares grow to fill wide screens, phones show fewer weeks
   const cell = Math.max(12, Math.min(24, Math.floor((width - labelW) / 26) - gap));
   const weeks = Math.max(6, Math.min(26, Math.floor((width - labelW + gap) / (cell + gap))));
@@ -170,8 +170,8 @@ function heatmapChart(activity, width) {
   const start = new Date(today);
   start.setDate(today.getDate() - dow - (weeks - 1) * 7);
 
-  let s = `<svg class="chart heatmap" width="${width}" height="${H}" viewBox="0 0 ${width} ${H}" role="img" aria-label="Days you studied">`;
-  ['M', '', 'W', '', 'F', '', ''].forEach((d, i) => {
+  let s = `<svg class="chart heatmap" width="${width}" height="${H}" viewBox="0 0 ${width} ${H}" role="img" aria-label="Dagen dat je geleerd hebt">`;
+  ['ma', '', 'wo', '', 'vr', '', ''].forEach((d, i) => {
     if (d) s += `<text class="axis" x="0" y="${top + i * (cell + gap) + cell - 2}">${d}</text>`;
   });
   let lastMonth = -1, lastLabelX = -Infinity;
@@ -185,12 +185,12 @@ function heatmapChart(activity, width) {
         lastMonth = date.getMonth();
         // skip a month label when it would bump into the previous one
         if (w < weeks - 1 && x - lastLabelX >= 34 && !(w === 0 && date.getDate() > 14)) {
-          s += `<text class="axis" x="${x}" y="11">${svgEsc(date.toLocaleDateString(undefined, { month: 'short' }))}</text>`;
+          s += `<text class="axis" x="${x}" y="11">${svgEsc(date.toLocaleDateString('nl-BE', { month: 'short' }))}</text>`;
           lastLabelX = x;
         }
       }
       const a = activity[dayString(date)] || { n: 0, r: 0 };
-      const tip = `${date.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}\n${a.n ? `${a.n} cards · ${a.r} right` : 'No studying'}`;
+      const tip = `${date.toLocaleDateString('nl-BE', { weekday: 'short', day: 'numeric', month: 'short' })}\n${a.n ? `${a.n} kaarten · ${a.r} juist` : 'Niet geleerd'}`;
       s += `<rect class="heat-${level(a.n)}${dayString(date) === dayString(today) ? ' today' : ''}" x="${x}" y="${top + d * (cell + gap)}" width="${cell}" height="${cell}" rx="3" data-tip="${svgEsc(tip)}"/>`;
     }
   }

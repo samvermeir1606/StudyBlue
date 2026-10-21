@@ -1,0 +1,17 @@
+{
+  "name": "StudyBlue",
+  "short_name": "StudyBlue",
+  "description": "Leren met flashcards",
+  "lang": "nl-BE",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f2f6fc",
+  "theme_color": "#1f7ae0",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

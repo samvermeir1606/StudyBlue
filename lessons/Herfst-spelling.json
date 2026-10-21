@@ -1,0 +1,32 @@
+{
+  "project": "Wero",
+  "name": "Herfst — spelling",
+  "description": "Luister en schrijf de woorden",
+  "type": "spelling",
+  "icon": "🔤",
+  "color": "#FE9934",
+  "cards": [
+    { "word": "kastanje", "say": "de kastanje", "sentence": "In de herfst raap ik een glanzende kastanje." },
+    { "word": "eikenblad", "say": "het eikenblad", "sentence": "Het eikenblad heeft ronde lobben." },
+    { "word": "eikel", "say": "de eikel", "sentence": "De eekhoorn eet een eikel." },
+    { "word": "beukennootje", "say": "het beukennootje", "sentence": "Het beukennootje valt van de beuk." },
+    { "word": "esdoorn", "say": "de esdoorn", "sentence": "De vruchten van de esdoorn draaien als een helikoptertje." },
+    { "word": "splitvrucht", "say": "de splitvrucht", "sentence": "De gevleugelde splitvrucht dwarrelt naar beneden." },
+    { "word": "sparrennaald", "say": "de sparrennaald", "sentence": "Een sparrennaald is kort en stijf." },
+    { "word": "dennennaald", "say": "de dennennaald", "sentence": "Een dennennaald is lang." },
+    { "word": "paddenstoel", "say": "de paddenstoel", "sentence": "In het bos groeit een paddenstoel." },
+    { "word": "weidechampignon", "say": "de weidechampignon", "sentence": "De weidechampignon groeit in het gras." },
+    { "word": "vliegenzwam", "say": "de vliegenzwam", "sentence": "De vliegenzwam heeft een rode hoed met witte stippen." },
+    { "word": "schimmel", "say": "de schimmel", "sentence": "Op het oude brood groeit schimmel." },
+    { "word": "bladnerf", "say": "de bladnerf", "sentence": "Door de bladnerf stroomt water." },
+    { "word": "omnivoor", "say": "de omnivoor", "sentence": "Een omnivoor eet vlees en planten." },
+    { "word": "herbivoor", "say": "de herbivoor", "sentence": "Een konijn is een herbivoor." },
+    { "word": "carnivoor", "say": "de carnivoor", "sentence": "Een vos is een carnivoor." },
+    { "word": "eierleggend", "sentence": "Een kip is eierleggend." },
+    { "word": "levendbarend", "sentence": "Een koe is levendbarend." },
+    { "word": "zoogdieren", "say": "de zoogdieren", "sentence": "Zoogdieren geven hun jongen melk." },
+    { "word": "amfibieën", "say": "de amfibieën", "sentence": "Kikkers zijn amfibieën." },
+    { "word": "spinachtigen", "say": "de spinachtigen", "sentence": "Spinachtigen hebben acht poten." },
+    { "word": "ongewerveld", "sentence": "Een slak is ongewerveld." }
+  ]
+}
