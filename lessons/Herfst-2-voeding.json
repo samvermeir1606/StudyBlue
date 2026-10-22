@@ -1,0 +1,30 @@
+{
+  "project": "Wero",
+  "name": "Herfst — 2. Voeding",
+  "description": "Studiewijzer: planteneters, vleeseters, alleseters en de voedselweg",
+  "icon": "🍽️",
+  "color": "#FE9934",
+  "order": 3,
+  "cards": [
+    { "front": "Wat is een herbivoor?", "back": "Een planteneter: hij eet alleen planten." },
+    { "front": "Wat is een carnivoor?", "back": "Een vleeseter: hij eet alleen vlees." },
+    { "front": "Wat is een omnivoor?", "back": "Een alleseter: hij eet vlees en planten." },
+    { "front": "Ik eet alleen vlees. Ik ben een …", "back": "Carnivoor", "wrong": ["Herbivoor", "Omnivoor"] },
+    { "front": "Ik eet vlees en planten. Ik ben een …", "back": "Omnivoor", "wrong": ["Herbivoor", "Carnivoor"] },
+    { "front": "Ik eet alleen planten. Ik ben een …", "back": "Herbivoor", "wrong": ["Carnivoor", "Omnivoor"] },
+
+    { "front": "Wat is de voedselweg bij gewervelde dieren?", "back": "bek → maag → darmen → bloed (voedingsstoffen) → uitwerpselen (afvalstoffen)", "hint": "Het begint bij de bek." },
+    { "front": "Waar gaat het voedsel na de bek naartoe?", "back": "Naar de maag.", "wrong": ["Naar de darmen", "Naar het bloed", "Naar de longen"] },
+    { "front": "Waar gaat het voedsel na de maag naartoe?", "back": "Naar de darmen.", "wrong": ["Naar de bek", "Naar de longen", "Naar het hart"] },
+    { "front": "Wat gebeurt er in de maag?", "back": "Het voedsel wordt verteerd.", "wrong": ["De voedingsstoffen gaan naar het bloed", "Het afval verlaat het lichaam", "Het voedsel wordt fijngekauwd"] },
+    { "front": "Wat gebeurt er in de darmen?", "back": "De voedingsstoffen gaan via het bloed naar de organen.", "wrong": ["Het voedsel wordt fijngekauwd", "Het dier ademt zuurstof in", "Het voedsel wordt verteerd"] },
+    { "front": "Wat brengt de voedingsstoffen naar de organen?", "back": "Het bloed.", "wrong": ["De maag", "De longen", "De uitwerpselen"] },
+    { "front": "Hoe verlaat het afval het lichaam?", "back": "Als uitwerpselen.", "wrong": ["Via het bloed", "Via de bek", "Via de longen"] },
+
+    { "front": "Wat eet een amfibie als larve meestal?", "back": "Planten. Als larve is een amfibie meestal herbivoor.", "hint": "Denk aan een kikkervisje." },
+    { "front": "Wat eet een amfibie als volwassen dier meestal?", "back": "Vlees, zoals insecten. Als volwassen dier is een amfibie meestal carnivoor." },
+    { "image": "images/herfst/kikkervisje.jpg", "front": "Dit is de larve van een kikker. Is hij herbivoor of carnivoor?", "back": "Herbivoor", "backImage": "images/herfst/kikkervisje.jpg", "wrong": ["Carnivoor", "Omnivoor"] },
+    { "image": "images/herfst/kikker.jpg", "front": "Dit is een volwassen kikker. Is hij herbivoor of carnivoor?", "back": "Carnivoor", "wrong": ["Herbivoor", "Omnivoor"] },
+    { "front": "Hoe heet de larve van een kikker?", "back": "Een kikkervisje.", "backImage": "images/herfst/kikkervisje.jpg", "wrong": ["Een rups", "Een made", "Een pop"] }
+  ]
+}

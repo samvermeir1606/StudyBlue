@@ -1,0 +1,40 @@
+{
+  "project": "Wero",
+  "name": "Herfst — 1. Dieren",
+  "description": "Studiewijzer: diergroepen, kenmerken, warm- en koudbloedig, ademen",
+  "icon": "🐾",
+  "color": "#FE9934",
+  "order": 2,
+  "cards": [
+    { "front": "Welke zes diergroepen ken je?", "back": "Zoogdieren, vogels, vissen, amfibieën, insecten en spinachtigen.", "hint": "4 groepen met een wervelkolom en 2 zonder" },
+    { "front": "Wat hebben gewervelde dieren?", "back": "Een wervelkolom.", "wrong": ["Geen wervelkolom", "Zes poten", "Kieuwen"] },
+    { "front": "Welke diergroepen zijn gewerveld?", "back": "Zoogdieren, vogels, vissen en amfibieën.", "wrong": ["Insecten en spinachtigen", "Zoogdieren, vogels en insecten", "Alleen zoogdieren"] },
+    { "front": "Welke diergroepen zijn ongewerveld?", "back": "Bijvoorbeeld insecten en spinachtigen.", "wrong": ["Zoogdieren, vogels, vissen en amfibieën", "Vissen en amfibieën", "Vogels en insecten"] },
+
+    { "front": "Een kat (zoogdier): gewerveld of ongewerveld?", "back": "Gewerveld", "wrong": ["Ongewerveld"] },
+    { "front": "Een spin (spinachtige): gewerveld of ongewerveld?", "back": "Ongewerveld", "wrong": ["Gewerveld"] },
+    { "front": "Een kikker (amfibie): gewerveld of ongewerveld?", "back": "Gewerveld", "wrong": ["Ongewerveld"] },
+    { "front": "Een mier (insect): gewerveld of ongewerveld?", "back": "Ongewerveld", "wrong": ["Gewerveld"], "hint": "Heeft een mier een wervelkolom?" },
+    { "front": "Een merel (vogel): gewerveld of ongewerveld?", "back": "Gewerveld", "wrong": ["Ongewerveld"] },
+    { "front": "Een goudvis (vis): gewerveld of ongewerveld?", "back": "Gewerveld", "wrong": ["Ongewerveld"] },
+
+    { "front": "Wat is het kenmerk van een zoogdier?", "back": "Een vacht. De jongen drinken melk bij hun moeder." },
+    { "front": "Wat is het kenmerk van een vogel?", "back": "Veren." },
+    { "front": "Wat is het kenmerk van een vis?", "back": "Vinnen en schubben." },
+    { "front": "Wat is het kenmerk van een amfibie?", "back": "Een gladde, vochtige huid." },
+    { "front": "Wat is het kenmerk van een insect?", "back": "Zes poten." },
+    { "front": "Wat is het kenmerk van een spinachtige?", "back": "Acht poten." },
+    { "front": "Welk dier heeft veren?", "back": "Een vogel.", "wrong": ["Een vis", "Een zoogdier", "Een amfibie"] },
+    { "front": "Welk dier heeft een gladde, vochtige huid?", "back": "Een amfibie, bijvoorbeeld een kikker.", "wrong": ["Een vis", "Een vogel", "Een insect"] },
+    { "front": "Hoeveel poten heeft een insect?", "back": "Zes poten.", "wrong": ["Acht poten", "Vier poten", "Tien poten"] },
+    { "front": "Hoeveel poten heeft een spinachtige?", "back": "Acht poten.", "wrong": ["Zes poten", "Vier poten", "Tien poten"] },
+
+    { "front": "Wat betekent warmbloedig?", "back": "Het dier houdt zijn lichaam zelf ongeveer even warm." },
+    { "front": "Wat betekent koudbloedig?", "back": "De lichaamstemperatuur hangt af van de omgeving." },
+    { "front": "Waarom hijgt een hond?", "back": "Om af te koelen.", "wrong": ["Omdat hij honger heeft", "Om warm te worden", "Om te blaffen"] },
+
+    { "front": "Waarmee ademt een mens?", "back": "Met longen.", "wrong": ["Met kieuwen", "Met de maag", "Met de huid"] },
+    { "front": "Waarmee ademt een vis?", "back": "Met kieuwen.", "wrong": ["Met longen", "Met vinnen", "Met schubben"] },
+    { "front": "Wat hebben alle dieren nodig om te ademen?", "back": "Zuurstof.", "wrong": ["Melk", "Zonlicht", "Voedingsstoffen"] }
+  ]
+}

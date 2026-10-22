@@ -3,6 +3,7 @@
   "name": "Herfst — spelling",
   "description": "Luister en schrijf de woorden",
   "type": "spelling",
+  "order": 6,
   "icon": "🔤",
   "color": "#FE9934",
   "cards": [

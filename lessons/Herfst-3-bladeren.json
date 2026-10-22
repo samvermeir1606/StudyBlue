@@ -1,0 +1,30 @@
+{
+  "project": "Wero",
+  "name": "Herfst — 3. Bladeren en naalden",
+  "description": "Studiewijzer: bladeren herkennen, den en spar, bladrand, bladnerf en bladvorm",
+  "icon": "🍁",
+  "color": "#FE9934",
+  "order": 4,
+  "cards": [
+    { "image": "images/herfst/blad-esdoorn.jpg", "front": "Van welke boom is dit blad?", "back": "Esdoorn", "wrong": ["Eik", "Beuk", "Paardenkastanje"] },
+    { "image": "images/herfst/blad-tamme-kastanje.jpg", "front": "Van welke boom is dit blad?", "back": "Tamme kastanje", "wrong": ["Beuk", "Paardenkastanje", "Eik"] },
+    { "image": "images/herfst/blad-eik.jpg", "front": "Van welke boom is dit blad?", "back": "Eik", "wrong": ["Esdoorn", "Beuk", "Tamme kastanje"] },
+    { "image": "images/herfst/blad-paardenkastanje.jpg", "front": "Van welke boom is dit blad?", "back": "Paardenkastanje", "wrong": ["Esdoorn", "Tamme kastanje", "Eik"] },
+    { "image": "images/herfst/blad-beuk.jpg", "front": "Van welke boom is dit blad?", "back": "Beuk", "wrong": ["Tamme kastanje", "Eik", "Esdoorn"] },
+
+    { "image": "images/herfst/den.jpg", "front": "Is dit een tak van een den of een spar?", "back": "Een den: de naalden staan in bundeltjes.", "wrong": ["Een spar: de naalden staan apart aan de tak."] },
+    { "image": "images/herfst/spar.jpg", "front": "Is dit een tak van een den of een spar?", "back": "Een spar: de naalden staan apart aan de tak.", "wrong": ["Een den: de naalden staan in bundeltjes."] },
+    { "front": "Wat is het verschil tussen de den en de spar?", "back": "Bij de den staan de naalden in bundeltjes. Bij de spar staan ze apart aan de tak." },
+    { "front": "Bij welke boom staan de naalden in bundeltjes?", "back": "Bij de den.", "wrong": ["Bij de spar."] },
+    { "front": "Bij welke boom staan de naalden apart aan de tak?", "back": "Bij de spar.", "wrong": ["Bij de den."] },
+
+    { "front": "Wat is de bladrand?", "back": "De omtrek van het blad. Die kan glad of getand zijn.", "backImage": "images/herfst/bladrand.jpg" },
+    { "front": "Wat is een bladnerf?", "back": "Een lijntje dat door het blad loopt.", "backImage": "images/herfst/bladnerf.jpg" },
+    { "front": "Wat is de bladvorm?", "back": "De vorm van het hele blad, bijvoorbeeld hartvormig of handvormig.", "backImage": "images/herfst/bladvorm.jpg" },
+    { "image": "images/herfst/bladrand.jpg", "front": "Wat wijzen de rode pijltjes aan?", "back": "De bladrand", "wrong": ["De bladnerf", "De bladvorm"] },
+    { "image": "images/herfst/bladnerf.jpg", "front": "Wat wijzen de rode pijltjes aan?", "back": "De bladnerven", "wrong": ["De bladrand", "De bladvorm"] },
+    { "image": "images/herfst/bladvorm.jpg", "front": "Wat toont de rode lijn rond het hele blad?", "back": "De bladvorm", "wrong": ["De bladnerf", "De bladrand"] },
+    { "front": "Hoe kan een bladrand zijn?", "back": "Glad of getand.", "wrong": ["Hartvormig of handvormig", "Rood of groen", "Lang of kort"] },
+    { "front": "Noem twee bladvormen.", "back": "Bijvoorbeeld hartvormig of handvormig.", "wrong": ["Glad of getand", "Groot of klein", "Naalden of bladeren"] }
+  ]
+}

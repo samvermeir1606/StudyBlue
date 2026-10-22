@@ -61,7 +61,7 @@ kastanje
       "backImage": "images/eik.jpg",       // optional picture on the back
       "audio": "audio/eikel.mp3",          // optional own recording instead of the voice
       "say": "de eikel",                   // optional, text to read aloud if it differs from the front
-      "wrong": ["De vrucht van de beuk"]   // optional wrong answers for multiple choice
+      "wrong": ["De vrucht van de beuk"]   // optional: multiple choice then uses only these wrong answers
     }
   ]
 }

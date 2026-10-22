@@ -1342,7 +1342,11 @@ function buildChoices(card) {
     seen.add(k);
     out.push(String(t));
   };
-  if (!s.reverse) shuffle(card.wrong).forEach(add);
+  // A card with its own wrong answers only uses those (e.g. "gewerveld" vs "ongewerveld")
+  if (!s.reverse && card.wrong.length) {
+    shuffle(card.wrong).forEach(add);
+    return shuffle([correct, ...out]).map(text => ({ text, correct: text === correct }));
+  }
   const sameLesson = shuffle(s.pool.filter(c => c !== card && c.lessonId === card.lessonId));
   const others = shuffle(s.pool.filter(c => c !== card && c.lessonId !== card.lessonId));
   [...sameLesson, ...others].forEach(c => add(sideOf(c, 'a').text));

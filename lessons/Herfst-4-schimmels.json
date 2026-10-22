@@ -1,0 +1,24 @@
+{
+  "project": "Wero",
+  "name": "Herfst — 4. Schimmels en het bos",
+  "description": "Studiewijzer: vliegenzwam, weidechampignon en schimmel op brood",
+  "icon": "🍄",
+  "color": "#FE9934",
+  "order": 5,
+  "cards": [
+    { "image": "images/herfst/vliegenzwam.jpg", "front": "Hoe heet deze paddenstoel?", "back": "De vliegenzwam", "wrong": ["De weidechampignon", "Schimmel op brood"] },
+    { "image": "images/herfst/weidechampignon.jpg", "front": "Hoe heet deze paddenstoel?", "back": "De weidechampignon", "wrong": ["De vliegenzwam", "Schimmel op brood"] },
+    { "image": "images/herfst/schimmel-brood.jpg", "front": "Wat zie je op dit brood?", "back": "Schimmel: pluizige plekken op oud brood.", "wrong": ["Een vliegenzwam", "Een weidechampignon"] },
+
+    { "front": "Hoe ziet een vliegenzwam eruit?", "back": "Een rode hoed met witte stippen en een witte steel.", "backImage": "images/herfst/vliegenzwam.jpg" },
+    { "front": "Waar groeit de vliegenzwam?", "back": "Bij bomen.", "wrong": ["In grasvelden of weiden", "Op oud brood", "In het water"] },
+    { "front": "Hoe ziet een weidechampignon eruit?", "back": "Een ronde, lichtbruine hoed en een witte steel.", "backImage": "images/herfst/weidechampignon.jpg" },
+    { "front": "Waar groeit de weidechampignon?", "back": "In grasvelden of weiden.", "wrong": ["Bij bomen", "Op oud brood", "In het water"] },
+    { "front": "Hoe ziet schimmel op brood eruit?", "back": "Pluizige plekken op oud brood.", "backImage": "images/herfst/schimmel-brood.jpg" },
+
+    { "front": "Welke paddenstoel heeft een rode hoed met witte stippen?", "back": "De vliegenzwam", "wrong": ["De weidechampignon"] },
+    { "front": "Welke paddenstoel heeft een ronde, lichtbruine hoed?", "back": "De weidechampignon", "wrong": ["De vliegenzwam"] },
+    { "front": "Welke paddenstoel groeit in grasvelden of weiden?", "back": "De weidechampignon", "wrong": ["De vliegenzwam"] },
+    { "front": "Welke paddenstoel groeit bij bomen?", "back": "De vliegenzwam", "wrong": ["De weidechampignon"] }
+  ]
+}

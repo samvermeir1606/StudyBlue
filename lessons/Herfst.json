@@ -1,17 +1,18 @@
 {
   "project": "Wero",
-  "name": "Herfst",
+  "name": "Herfst — woordenschat",
   "description": "Woordenschat",
   "icon": "🍂",
   "color": "#FE9934",
+  "order": 1,
   "cards": [
     {
       "front": "Het kastanjeblad (tamme kastanje)",
-      "back": "Een blad van de kastanjeboom. De tamme kastanje heeft een lang blad met een getande rand. De vrucht is een kastanje, hij zit in een groene bolsters met stekels. Deze is wel eetbaar."
+      "back": "Een blad van de kastanjeboom. De tamme kastanje heeft een lang blad met een getande rand. De vrucht is een kastanje, hij zit in een groene bolster met stekels. Deze is wel eetbaar."
     },
     {
-      "front": "Het kastanjeblad (paardekastanje)",
-      "back": "Een blad van de kastanjeboom. De paardekastanje heeft een blad dat uit meerdere blaadjes bestaat zoals de vingers aan een hand. De vrucht is een kastanje, hij zit in een bruine bolster met korte stekels. Deze is niet eetbaar."
+      "front": "Het kastanjeblad (paardenkastanje)",
+      "back": "Een blad van de kastanjeboom. De paardenkastanje heeft een blad dat uit meerdere blaadjes bestaat, zoals de vingers aan een hand. De vrucht is een kastanje, hij zit in een bruine bolster met korte stekels. Deze is niet eetbaar."
     },
     {
       "front": "Het eikenblad",
@@ -39,7 +40,7 @@
     },
     {
       "front": "De spar",
-      "back": "Een naaldboom met korte, losse naalden."
+      "back": "Een naaldboom met korte naalden die apart aan de tak staan."
     },
     {
       "front": "De sparrennaald",
@@ -47,7 +48,7 @@
     },
     {
       "front": "De den",
-      "back": "Een naaldboom waarvan de naalden in groepjes bij elkaar staan."
+      "back": "Een naaldboom waarvan de naalden in bundeltjes aan de tak staan."
     },
     {
       "front": "De dennennaald",
@@ -55,43 +56,43 @@
     },
     {
       "front": "De weidechampignon",
-      "back": "Een paddenstoel die vaak in gras en weiden groeit."
+      "back": "Een paddenstoel met een ronde, lichtbruine hoed en een witte steel. Hij groeit in grasvelden of weiden."
     },
     {
       "front": "De vliegenzwam",
-      "back": "Een paddenstoel met rode hoed en witte stippen."
+      "back": "Een paddenstoel met een rode hoed met witte stippen en een witte steel. Hij groeit bij bomen."
     },
     {
       "front": "De schimmel",
-      "back": "Een levende schimmel die kan groeien als pluisjes of vlekken, vaak op oud brood of achtergelaten fruit/groenten..."
+      "back": "Pluizige plekken die groeien op oud brood of oud fruit."
     },
     {
       "front": "De bladvorm",
-      "back": "De vorm van een blad. Deze kan rond, langwerpig of handvormig zijn."
+      "back": "De vorm van het hele blad, bijvoorbeeld hartvormig of handvormig."
     },
     {
       "front": "De bladnerf",
-      "back": "Een soort buisje in een blad dat water en voedingsstoffen vervoert."
+      "back": "Een lijntje dat door het blad loopt."
     },
     {
       "front": "De bladrand",
-      "back": "De buitenste rand van een blad. Deze kan glad, gegolfd of getand zijn."
+      "back": "De omtrek van het blad. Die kan glad of getand zijn."
     },
     {
       "front": "De omnivoor",
-      "back": "Dier dat vlees en planten eet."
+      "back": "Een alleseter: een dier dat vlees en planten eet."
     },
     {
       "front": "De herbivoor",
-      "back": "Dier dat alleen planten eet."
+      "back": "Een planteneter: een dier dat alleen planten eet."
     },
     {
       "front": "De carnivoor",
-      "back": "Dier dat alleen vlees eet."
+      "back": "Een vleeseter: een dier dat alleen vlees eet."
     },
     {
       "front": "Eierleggend",
-      "back": "Dieren dat eieren leggen. Het jong groeit verder in het ei."
+      "back": "Dieren die eieren leggen. Het jong groeit verder in het ei."
     },
     {
       "front": "Levendbarend",
@@ -99,19 +100,19 @@
     },
     {
       "front": "De zoogdieren",
-      "back": "Dieren die hun jongen zogen (melk geven)."
+      "back": "Dieren met een vacht. De jongen drinken melk bij hun moeder."
     },
     {
       "front": "De vogels",
-      "back": "Dieren die in de lucht leven. Ze kunnen vliegen dankzij vleugels en hebben veren."
+      "back": "Dieren met veren. De meeste vogels kunnen vliegen met hun vleugels."
     },
     {
       "front": "De amfibieën",
-      "back": "Dieren die op het land en in water kunnen leven."
+      "back": "Dieren met een gladde, vochtige huid. Ze leven in het water en op het land."
     },
     {
       "front": "De vissen",
-      "back": "Dieren die in het water leven. Ze kunnen zwemmen dankzij kieuwen, vinnen en schubben."
+      "back": "Dieren die in het water leven. Ze hebben vinnen en schubben en ademen met kieuwen."
     },
     {
       "front": "De insecten",
@@ -123,11 +124,11 @@
     },
     {
       "front": "De gewervelde dieren",
-      "back": "Deze dieren hebben een wervelkolom."
+      "back": "Dieren met een wervelkolom: zoogdieren, vogels, vissen en amfibieën."
     },
     {
       "front": "De ongewervelde dieren",
-      "back": "Deze dieren hebben geen wervelkolom."
+      "back": "Dieren zonder wervelkolom, bijvoorbeeld insecten en spinachtigen."
     }
   ]
 }
